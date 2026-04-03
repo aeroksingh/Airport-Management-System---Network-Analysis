@@ -9,6 +9,55 @@
     });
     };
 
+    // @desc    First-time setup — create initial admin account
+    // @route   POST /api/auth/setup
+    // @access  Public (only works when 0 users exist)
+    const setup = async (req, res, next) => {
+    try {
+        const userCount = await User.countDocuments();
+        if (userCount > 0) {
+        return res.status(409).json({
+            success: false,
+            message: 'Setup already completed. An admin account already exists.',
+        });
+        }
+
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'Name, email, and password are required for setup.',
+        });
+        }
+
+        const user = await User.create({
+        name,
+        email,
+        password,
+        role: 'admin', // First user is always admin
+        });
+
+        const token = generateToken(user._id, user.email, user.role);
+
+        logger.info(`First-time setup completed: ${email} created as admin`);
+
+        res.status(201).json({
+        success: true,
+        message: 'Admin account created successfully. You can now log in.',
+        token,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        },
+        });
+    } catch (error) {
+        next(error);
+    }
+    };
+
     // @desc    Register a new user
     // @route   POST /api/auth/register
     // @access  Public
@@ -117,4 +166,4 @@
     }
     };
 
-    module.exports = { register, login, getMe };
+    module.exports = { setup, register, login, getMe };

@@ -116,6 +116,12 @@
                 </Link>
             </p>
 
+            <div style={styles.setupLink}>
+                <Link to="/setup" style={{ color: '#06b6d4', textDecoration: 'none', fontWeight: 500, fontSize: 12 }}>
+                🔧 First time setup? Create admin account
+                </Link>
+            </div>
+
             <div style={styles.demoBox}>
                 <div style={styles.demoTitle}>Demo Credentials</div>
                 <div style={styles.demoItem}>
@@ -227,6 +233,10 @@
         marginTop: 20,
         fontSize: 13,
         color: '#4a6080',
+    },
+    setupLink: {
+        textAlign: 'center',
+        marginTop: 12,
     },
     demoBox: {
         marginTop: 24,

@@ -2,6 +2,7 @@
     import { toast } from 'react-toastify';
     import { passengerAPI, flightAPI } from '../services/api';
     import Modal from '../components/Modal';
+    import RoleGuard from '../components/RoleGuard';
     import { CheckInBadge } from '../components/StatusBadge';
 
     const emptyForm = {
@@ -127,7 +128,9 @@
                 <option value="true">Checked In</option>
                 <option value="false">Pending</option>
                 </select>
+                <RoleGuard roles={['admin', 'staff']}>
                 <button className="btn btn-primary" onClick={openCreate}>+ Add Passenger</button>
+                </RoleGuard>
             </div>
             </div>
         </div>
@@ -181,14 +184,20 @@
                         </td>
                         <td>
                         <div style={{ display: 'flex', gap: 6 }}>
+                            <RoleGuard roles={['admin', 'staff']}>
                             {!p.checkedIn && (
-                            <button className="btn btn-success btn-sm"
+                                <button className="btn btn-success btn-sm"
                                 onClick={() => { setCheckInId(p._id); setSeatInput(p.seatNumber || ''); }}>
                                 Check-In
-                            </button>
+                                </button>
                             )}
+                            </RoleGuard>
+                            <RoleGuard roles={['admin', 'staff']}>
                             <button className="btn btn-secondary btn-sm" onClick={() => openEdit(p)}>Edit</button>
+                            </RoleGuard>
+                            <RoleGuard roles={['admin']}>
                             <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(p._id)}>Del</button>
+                            </RoleGuard>
                         </div>
                         </td>
                     </tr>

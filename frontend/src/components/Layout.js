@@ -1,6 +1,7 @@
     import React from 'react';
     import { Outlet, NavLink, useNavigate } from 'react-router-dom';
     import { useAuth } from '../App';
+    import useRole from '../hooks/useRole';
     import { toast } from 'react-toastify';
 
     const navItems = [
@@ -10,8 +11,15 @@
     { path: '/gates',      label: 'Gates',        icon: '▣' },
     ];
 
+    const roleBadgeColors = {
+    admin:  { bg: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', border: 'rgba(239, 68, 68, 0.3)' },
+    staff:  { bg: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', border: 'rgba(59, 130, 246, 0.3)' },
+    viewer: { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: 'rgba(16, 185, 129, 0.3)' },
+    };
+
     export default function Layout() {
     const { user, logout } = useAuth();
+    const { role } = useRole();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -19,6 +27,8 @@
         toast.success('Logged out successfully');
         navigate('/login');
     };
+
+    const badgeStyle = roleBadgeColors[role] || roleBadgeColors.viewer;
 
     return (
         <div className="layout">
@@ -57,7 +67,21 @@
             </div>
             <div style={styles.userInfo}>
                 <div style={styles.userName}>{user?.name || 'User'}</div>
-                <div style={styles.userRole}>{user?.role || 'staff'}</div>
+                <div style={{
+                display: 'inline-block',
+                fontSize: 9,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '2px 8px',
+                borderRadius: 4,
+                marginTop: 3,
+                background: badgeStyle.bg,
+                color: badgeStyle.color,
+                border: `1px solid ${badgeStyle.border}`,
+                }}>
+                {role}
+                </div>
             </div>
             <button onClick={handleLogout} style={styles.logoutBtn} title="Logout">
                 ⏻
@@ -178,13 +202,6 @@
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-    },
-    userRole: {
-        fontSize: 10,
-        color: '#4a6080',
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
-        fontWeight: 600,
     },
     logoutBtn: {
         background: 'none',

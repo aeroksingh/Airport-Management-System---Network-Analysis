@@ -8,6 +8,7 @@
     deleteFlight,
     } = require('../controllers/flightController');
     const { protect } = require('../middleware/auth');
+    const authorize = require('../middleware/authorize');
     const validate = require('../middleware/validate');
 
     const router = express.Router();
@@ -29,8 +30,18 @@
         .withMessage('Invalid status'),
     ];
 
-    router.route('/').get(getFlights).post(flightValidation, validate, createFlight);
+    // GET all flights — admin, staff, viewer
+    // POST create flight — admin, staff only
+    router.route('/')
+    .get(authorize('admin', 'staff', 'viewer'), getFlights)
+    .post(authorize('admin', 'staff'), flightValidation, validate, createFlight);
 
-    router.route('/:id').get(getFlight).put(updateFlight).delete(deleteFlight);
+    // GET single flight — admin, staff, viewer
+    // PUT update flight — admin, staff only
+    // DELETE flight — admin only
+    router.route('/:id')
+    .get(authorize('admin', 'staff', 'viewer'), getFlight)
+    .put(authorize('admin', 'staff'), updateFlight)
+    .delete(authorize('admin'), deleteFlight);
 
     module.exports = router;

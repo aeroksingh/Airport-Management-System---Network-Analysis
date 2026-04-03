@@ -2,6 +2,7 @@
     import { toast } from 'react-toastify';
     import { flightAPI } from '../services/api';
     import Modal from '../components/Modal';
+    import RoleGuard from '../components/RoleGuard';
     import { FlightStatusBadge } from '../components/StatusBadge';
 
     const STATUSES = ['Scheduled', 'Boarding', 'Departed', 'Arrived', 'Cancelled', 'Delayed'];
@@ -111,7 +112,9 @@
                 <option value="">All Statuses</option>
                 {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
+                <RoleGuard roles={['admin', 'staff']}>
                 <button className="btn btn-primary" onClick={openCreate}>+ Add Flight</button>
+                </RoleGuard>
             </div>
             </div>
         </div>
@@ -161,8 +164,12 @@
                         <td><FlightStatusBadge status={f.status} /></td>
                         <td>
                         <div style={{ display: 'flex', gap: 6 }}>
+                            <RoleGuard roles={['admin', 'staff']}>
                             <button className="btn btn-secondary btn-sm" onClick={() => openEdit(f)}>Edit</button>
+                            </RoleGuard>
+                            <RoleGuard roles={['admin']}>
                             <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(f._id)}>Del</button>
+                            </RoleGuard>
                         </div>
                         </td>
                     </tr>

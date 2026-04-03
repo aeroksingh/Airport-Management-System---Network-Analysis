@@ -10,10 +10,12 @@ const {
   deleteGate,
 } = require('../controllers/gateController');
 const { protect } = require('../middleware/auth');
+const authorize = require('../middleware/authorize');
 const validate = require('../middleware/validate');
 
 const router = express.Router();
 
+// All routes require authentication
 router.use(protect);
 
 const gateValidation = [
@@ -25,11 +27,22 @@ const gateValidation = [
     .withMessage('Invalid status'),
 ];
 
-router.route('/').get(getGates).post(gateValidation, validate, createGate);
+// GET all gates — admin, staff, viewer
+// POST create gate — admin only
+router.route('/')
+  .get(authorize('admin', 'staff', 'viewer'), getGates)
+  .post(authorize('admin'), gateValidation, validate, createGate);
 
-router.route('/:id').get(getGate).put(updateGate).delete(deleteGate);
+// GET single gate — admin, staff, viewer
+// PUT update gate — admin, staff only
+// DELETE gate — admin only
+router.route('/:id')
+  .get(authorize('admin', 'staff', 'viewer'), getGate)
+  .put(authorize('admin', 'staff'), updateGate)
+  .delete(authorize('admin'), deleteGate);
 
-router.patch('/:id/assign', assignFlight);
-router.patch('/:id/unassign', unassignFlight);
+// PATCH assign/unassign — admin, staff only
+router.patch('/:id/assign', authorize('admin', 'staff'), assignFlight);
+router.patch('/:id/unassign', authorize('admin', 'staff'), unassignFlight);
 
 module.exports = router;

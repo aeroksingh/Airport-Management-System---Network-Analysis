@@ -4,8 +4,8 @@
     import { authAPI } from '../services/api';
     import { useAuth } from '../App';
 
-    export default function Login() {
-    const [form, setForm] = useState({ email: '', password: '' });
+    export default function Register() {
+    const [form, setForm] = useState({ name: '', email: '', password: '', role: 'staff' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const { login } = useAuth();
@@ -21,12 +21,12 @@
         setLoading(true);
         setError('');
         try {
-        const res = await authAPI.login(form);
+        const res = await authAPI.register(form);
         login(res.data.user, res.data.token);
-        toast.success(`Welcome back, ${res.data.user.name}!`);
+        toast.success(`Welcome, ${res.data.user.name}! Account created.`);
         navigate('/dashboard');
         } catch (err) {
-        const msg = err.response?.data?.message || 'Login failed. Please try again.';
+        const msg = err.response?.data?.message || 'Registration failed. Please try again.';
         setError(msg);
         toast.error(msg);
         } finally {
@@ -65,13 +65,27 @@
         <div style={styles.right}>
             <div style={styles.formBox}>
             <div style={styles.formHeader}>
-                <h2 style={styles.formTitle}>Sign In</h2>
-                <p style={styles.formSubtitle}>Enter your credentials to access the system</p>
+                <h2 style={styles.formTitle}>Create Account</h2>
+                <p style={styles.formSubtitle}>Register to access the airport management system</p>
             </div>
 
             {error && <div className="alert alert-error">⚠ {error}</div>}
 
             <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input
+                    type="text"
+                    name="name"
+                    className="form-control"
+                    placeholder="Airport Admin"
+                    value={form.name}
+                    onChange={handleChange}
+                    required
+                    autoFocus
+                />
+                </div>
+
                 <div className="form-group">
                 <label className="form-label">Email Address</label>
                 <input
@@ -82,7 +96,6 @@
                     value={form.email}
                     onChange={handleChange}
                     required
-                    autoFocus
                 />
                 </div>
 
@@ -96,7 +109,22 @@
                     value={form.password}
                     onChange={handleChange}
                     required
+                    minLength={6}
                 />
+                </div>
+
+                <div className="form-group">
+                <label className="form-label">Role</label>
+                <select
+                    name="role"
+                    className="form-control"
+                    value={form.role}
+                    onChange={handleChange}
+                >
+                    <option value="staff">Staff</option>
+                    <option value="admin">Admin</option>
+                    <option value="viewer">Viewer</option>
+                </select>
                 </div>
 
                 <button
@@ -105,28 +133,16 @@
                 style={{ width: '100%', justifyContent: 'center', marginTop: 8, padding: '12px' }}
                 disabled={loading}
                 >
-                {loading ? <><span className="spinner" /> Signing In...</> : 'Sign In →'}
+                {loading ? <><span className="spinner" /> Creating Account...</> : 'Create Account →'}
                 </button>
             </form>
 
             <p style={styles.switchLink}>
-                Don't have an account?{' '}
-                <Link to="/register" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>
-                Register here
+                Already have an account?{' '}
+                <Link to="/login" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600 }}>
+                Sign in here
                 </Link>
             </p>
-
-            <div style={styles.demoBox}>
-                <div style={styles.demoTitle}>Demo Credentials</div>
-                <div style={styles.demoItem}>
-                <span>Email:</span>
-                <span style={{ fontFamily: 'monospace', color: '#06b6d4' }}>admin@airport.com</span>
-                </div>
-                <div style={styles.demoItem}>
-                <span>Password:</span>
-                <span style={{ fontFamily: 'monospace', color: '#06b6d4' }}>admin123</span>
-                </div>
-            </div>
             </div>
         </div>
         </div>
@@ -227,27 +243,5 @@
         marginTop: 20,
         fontSize: 13,
         color: '#4a6080',
-    },
-    demoBox: {
-        marginTop: 24,
-        padding: 16,
-        background: 'rgba(6, 182, 212, 0.06)',
-        border: '1px solid rgba(6, 182, 212, 0.2)',
-        borderRadius: 10,
-    },
-    demoTitle: {
-        fontSize: 10,
-        color: '#06b6d4',
-        textTransform: 'uppercase',
-        letterSpacing: '0.1em',
-        fontWeight: 700,
-        marginBottom: 10,
-    },
-    demoItem: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: 12,
-        color: '#8899bb',
-        marginBottom: 4,
     },
     };

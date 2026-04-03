@@ -1,9 +1,10 @@
-    import React, { createContext, useContext, useState, useEffect } from 'react';
+    import React, { createContext, useContext, useState } from 'react';
     import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
     import { ToastContainer } from 'react-toastify';
 
     import Login from './pages/Login';
     import Register from './pages/Register';
+    import Setup from './pages/Setup';
     import Dashboard from './pages/Dashboard';
     import Flights from './pages/Flights';
     import Passengers from './pages/Passengers';
@@ -81,6 +82,7 @@
             {/* Public */}
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+            <Route path="/setup" element={<PublicRoute><Setup /></PublicRoute>} />
 
             {/* Protected */}
             <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>

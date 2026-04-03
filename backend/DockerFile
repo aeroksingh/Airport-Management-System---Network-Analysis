@@ -1,19 +1,18 @@
-# Use official Node.js LTS image
+# ── Stage: Production ─────────────────────────────────────
 FROM node:18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files first (for better Docker layer caching)
+# Copy package files first (layer caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --omit=dev
+# Install production dependencies only
+RUN npm ci --omit=dev
 
-# Copy rest of the source code
+# Copy source code (.dockerignore excludes .env, node_modules, logs/)
 COPY . .
 
-# Create logs directory
+# Create logs directory (volume will be mounted here)
 RUN mkdir -p logs
 
 # Expose backend port

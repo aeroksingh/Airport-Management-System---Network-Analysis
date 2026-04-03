@@ -2,6 +2,7 @@
     import { toast } from 'react-toastify';
     import { gateAPI, flightAPI } from '../services/api';
     import Modal from '../components/Modal';
+    import RoleGuard from '../components/RoleGuard';
     import { GateStatusBadge, FlightStatusBadge } from '../components/StatusBadge';
 
     const GATE_STATUSES = ['Available', 'Occupied', 'Maintenance', 'Closed'];
@@ -132,7 +133,9 @@
                 <option value="">All Statuses</option>
                 {GATE_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
+                <RoleGuard roles={['admin']}>
                 <button className="btn btn-primary" onClick={openCreate}>+ Add Gate</button>
+                </RoleGuard>
             </div>
             </div>
         </div>
@@ -194,19 +197,27 @@
 
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <RoleGuard roles={['admin', 'staff']}>
                     {g.status === 'Available' && (
-                    <button className="btn btn-primary btn-sm"
+                        <button className="btn btn-primary btn-sm"
                         onClick={() => { setAssignGateId(g._id); setSelectedFlight(''); }}>
                         Assign Flight
-                    </button>
+                        </button>
                     )}
+                    </RoleGuard>
+                    <RoleGuard roles={['admin', 'staff']}>
                     {g.assignedFlight && (
-                    <button className="btn btn-secondary btn-sm" onClick={() => handleUnassign(g._id)}>
+                        <button className="btn btn-secondary btn-sm" onClick={() => handleUnassign(g._id)}>
                         Unassign
-                    </button>
+                        </button>
                     )}
+                    </RoleGuard>
+                    <RoleGuard roles={['admin', 'staff']}>
                     <button className="btn btn-secondary btn-sm" onClick={() => openEdit(g)}>Edit</button>
+                    </RoleGuard>
+                    <RoleGuard roles={['admin']}>
                     <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(g._id)}>Del</button>
+                    </RoleGuard>
                 </div>
                 </div>
             ))}

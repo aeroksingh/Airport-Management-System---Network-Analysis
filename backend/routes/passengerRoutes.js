@@ -9,10 +9,12 @@
     deletePassenger,
     } = require('../controllers/passengerController');
     const { protect } = require('../middleware/auth');
+    const authorize = require('../middleware/authorize');
     const validate = require('../middleware/validate');
 
     const router = express.Router();
 
+    // All routes require authentication
     router.use(protect);
 
     const passengerValidation = [
@@ -23,10 +25,21 @@
     body('flight').notEmpty().withMessage('Flight ID is required'),
     ];
 
-    router.route('/').get(getPassengers).post(passengerValidation, validate, createPassenger);
+    // GET all passengers — admin, staff, viewer
+    // POST add passenger — admin, staff only
+    router.route('/')
+    .get(authorize('admin', 'staff', 'viewer'), getPassengers)
+    .post(authorize('admin', 'staff'), passengerValidation, validate, createPassenger);
 
-    router.route('/:id').get(getPassenger).put(updatePassenger).delete(deletePassenger);
+    // GET single passenger — admin, staff, viewer
+    // PUT update passenger — admin, staff only
+    // DELETE passenger — admin only
+    router.route('/:id')
+    .get(authorize('admin', 'staff', 'viewer'), getPassenger)
+    .put(authorize('admin', 'staff'), updatePassenger)
+    .delete(authorize('admin'), deletePassenger);
 
-    router.patch('/:id/checkin', checkInPassenger);
+    // PATCH check-in — admin, staff only
+    router.patch('/:id/checkin', authorize('admin', 'staff'), checkInPassenger);
 
     module.exports = router;
